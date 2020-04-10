@@ -1,0 +1,14 @@
+block_type,treatment,start_position,setup_a1,setup_a2,setup_a3,setup_a4,setup_a5,setup_a6,setup_b1,setup_b2,setup_b3,setup_b4,setup_b5,setup_b6,total_left,total_right,waiting_elapsed,side_chosen,choice_correct,choice_correct,bonus_block_type,bonus_trial_number_chosen,bonus_trial_correct,bonus_total
+sim-numbers,,,78,29,85,88,76,90,90,68,81,57,80,88,446,464,3698.683333330669,left,false,false,,,,
+seq-bars,,,73,85,73,48,27,88,30,64,46,69,70,66,394,345,1250.2458999999997,right,false,false,,,,
+seq-numbers,,,73,85,73,48,27,88,30,64,46,69,70,66,394,345,1033.2920000000042,left,true,true,,,,
+alt-numbers,,,77,88,82,75,58,41,70,75,67,86,47,55,421,400,2417.2849000027045,left,true,true,,,,
+alt-bars,,,77,88,82,75,58,41,70,75,67,86,47,55,421,400,616.6419999999941,left,true,true,,,,
+sim-bars,,,78,29,85,88,76,90,90,68,81,57,80,88,446,464,933.2960000000146,left,false,false,,,,
+,,,,,,,,,,,,,,,,,,,,,sim-numbers,,false,
+,,,,,,,,,,,,,,,,,,,,,seq-bars,,false,
+,,,,,,,,,,,,,,,,,,,,,seq-numbers,,true,
+,,,,,,,,,,,,,,,,,,,,,alt-numbers,,true,
+,,,,,,,,,,,,,,,,,,,,,alt-bars,,true,
+,,,,,,,,,,,,,,,,,,,,,sim-bars,,false,
+,,,,,,,,,,,,,,,,,,,,,,,,3

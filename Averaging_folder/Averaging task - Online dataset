@@ -1,0 +1,148 @@
+Averaging task - Online dataset
+
+
+
+General information about the task
+6 blocks (type and order of stimuli)
+Each block has 30 (or 50) trials (rows)
+
+NOTE: start with the length 30 trials per condition, but later I will ask you also to make the code flexible in case we have files of different lengths (right now, 30 and 50 trials per block)
+
+
+
+
+
+Structure of the CSV file (from online task)
+[each row indicates a trial of the experiment]
+
+1) block_type
+Text (two parts: order of appearence and type of visualization)
+Simultaneous/Alternate/Sequential: order of appearance on the screen
+Numbers/Bars: visualization of the stimuli
+
+2) treatment
+Text (up/down)
+It indicates the treatment (upward or downward triangular distribution)
+
+3) start_position
+number or text (e.g. a_on_left)
+0 = simultaneous
+a_on_left = values listed as A appears first and on the left
+
+4-9) setup_aX
+Numeric - six numbers shown as A
+
+10-15) setup_bX
+Numeric - six numbers shown as B
+
+16) total_left
+17) total_right
+Numeric - Sum of the values on the left/right (notice that A/B does not mean left/right)
+
+18) waiting_elapsed
+Numeric - Response time, in milliseconds
+
+19) side_chosen
+Text (left/right)
+Which side is chosen by the participant
+
+20) choice_correct
+Boolean (TRUE/FALSE)
+True if the chosen side has a value larger (or equal) than the other one
+
+Note: this variable appears twice (two separate columns), just ignore the second time it appears
+
+IGNORE ALL THE REMAINING COLUMNS FROM 21 ONWARDS
+
+
+
+
+
+
+STEP 1: TRANSFORM ALL THE VARIABLES BELOW INTO NUMBERS (change booleans and text into numbers)
+
+1) block_type: it becomes
+sim-num = 1
+alt-num = 2
+seq-num = 3
+sim-bar = 4
+alt-bar = 5
+seq-bar = 6
+
+2) treatment
+up = 1
+down = 2
+
+3) start_position
+0 stays 0
+a_on_left = 1
+a_on_right = 2
+b_on_left = 3
+b_on_right = 4
+
+19) side_chosen
+left = 0
+right = 1
+
+20) choice_correct
+FALSE = 0
+TRUE = 1
+
+
+
+
+STEP 2: ADAPT THE FILE IN ORDER TO GET THE FOLLOWING COLUMNS (only numerical values)
+
+1) participant_ID
+[NEW - progressive ID for the participant]
+1 for the first file, 2 for the second file, etc
+
+2) treatment
+[from treatment variable above]
+1 = up, 2 = down
+
+3) block_progressive_ID
+[NEW - order of appearence of the blocks]
+1 for the first one within the file, 2 for the second, etc, until 6
+
+4) block_type_ID
+[from block_type above]
+1 = sim-num, etc
+
+5) block_order
+[NEW]
+1 = simultaneous
+2 = alternate
+3 = sequential
+
+6) block_stimuli
+[NEW]
+1 = numbers
+2 = bars
+
+7) trial_ID
+[NEW - order of appearance of the trials within each block]
+progressive values 1,...,30
+
+8) starting_position
+[NEW - which side is shown first]
+0 = simultaneous
+1 = left first
+2 = right first
+
+9-14) value_left_X
+15-20) value_right_X
+[adapted from the columns a/b]
+NOTE: a and b do not always correspond to left/right (it depends on the value in column 3)
+The goal is to have LEFT in the columns 9-14
+
+21) total_left
+22) total_right
+23) waiting_elapsed 	(in milliseconds)
+24) side_chosen			(left=0, right=1)
+25) choice_correct		(false=0, true=1)
+[ALL OF THESE exactly as above]
+
+
+
+

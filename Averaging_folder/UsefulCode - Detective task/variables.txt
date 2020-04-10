@@ -1,0 +1,20 @@
+Meaning of variables for columns -
+
+Suspect numbers
+Red - 1
+Blue - 0
+
+Treatment
+Guilty - 1
+Innocent - 0
+
+Choices -
+investigate_red - 0
+investigate_blue - 1
+accuse_red - 2
+accuse_blue - 3
+
+Outcome - 
+-1 - No evidence
+0 - Evidence for blue
+1 - Evidence for red
