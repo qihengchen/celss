@@ -28,7 +28,7 @@ def plot_figure_three(df, left_colNames, right_colNames, dvmin=-100, dvmax=101, 
 	left = df[left_colNames]
 	right = df[right_colNames]
 	lr_diff = pd.DataFrame({'diff': left.sum(axis=1)-right.sum(axis=1)})
-	lr_diff['choice'] = df[['side_chosen']]
+	lr_diff['choice'] = np.logical_xor(df['side_chosen'],1).astype(int)
 	lr_diff = lr_diff.sort_values(by=['diff'], ascending=True)
 
 	grouped = group(lr_diff, -100, 101, 20)
@@ -55,7 +55,7 @@ def plot_figure_four(df, left_colNames, right_colNames, dvmin=-60, dvmax=61, ste
 	diff['count'] = diff.gt(0).sum(axis=1)
 
 	diff['diff'] = left.sum(axis=1)-right.sum(axis=1)
-	diff['choice'] = df[['side_chosen']]
+	diff['choice'] = np.logical_xor(df['side_chosen'],1).astype(int)
 
 	diff = diff.sort_values(by=['diff'], ascending=True)
 
@@ -89,7 +89,7 @@ if __name__ == '__main__':
 
 	left_colNames = ['setup_a'+str(i) for i in range(1,7)]
 	right_colNames = ['setup_b'+str(i) for i in range(1,7)]
-	
+
 	plot_figure_three(df, left_colNames, right_colNames, -100, 101, 20)
 
 	plot_figure_four(df, left_colNames, right_colNames, -60, 61, 10)
