@@ -31,7 +31,7 @@ def step2(df, ID):
 		df['trial_ID'] = 0
 		df['trial_ID_block'] = 0 
 
-	df['block_order'] = df['block_type'] % 3 # based on block_type: 1/4->1 sim; 2/5->2 alt; 3/6->3 seq
+	df['block_order'] = df['block_type'] % 3 + 1 # based on block_type: 1/4->1 sim; 2/5->2 alt; 3/6->3 seq
 	df['block_stimuli'] = 1
 	df.loc[df['block_type'] >= 4, 'block_stimuli'] = 2 # OR df.loc[df['???'].str.contains('bar', 'block_stimuli'] = 2
 	
@@ -44,6 +44,10 @@ def step2(df, ID):
 	b_columns = ['setup_b'+str(i) for i in range(1,7)]
 	should_swap = df['start_position'].isin([2, 3])
 	df.loc[should_swap, a_columns+b_columns] = df.loc[should_swap, b_columns+a_columns].values
+	df.drop(columns=['choice_correct.1'], inplace=True)
+	for i in range(1, 7):
+		df['value_left_'+str(i)] = df['setup_a'+str(i)]
+		df['value_right_'+str(i)] = df['setup_b'+str(i)]
 	return df
 
 
@@ -58,13 +62,21 @@ if __name__ == '__main__':
 	stacked_df = None
 	ID = 1
 
+	print(len(files))
+	df = pd.DataFrame({'file_names': files, 'participant_ID': [i+1 for i in range(len(files))]})
+	df.to_csv(join(output_path, 'file_ID.csv'), index=False)
 
+	cols = ['participant_ID', 'treatment', 'block_progressive_ID', 'block_type', 'block_order', 'block_stimuli', 'trial_ID', 'start_position', 'value_left_1', 'value_left_2', 'value_left_3', 'value_left_4', 'value_left_5', 'value_left_6',
+		'value_right_1', 'value_right_2', 'value_right_3', 'value_right_4', 'value_right_5', 'value_right_6', 'total_left', 'total_right', 'waiting_elapsed', 'side_chosen', 'choice_correct', 
+		'bonus_block_type', 'bonus_trial_number_chosen', 'bonus_trial_correct', 'bonus_total', 'trial_ID_block', 'left-0-right']
+	
 	for f in files:
 		df = pd.read_csv(join(input_path, f), skip_blank_lines=True, header=0)
 		df = df.iloc[:df.shape[0]-7]
-		print(f)
+		print(f, ID)
 		df = step1(df)
 		df = step2(df, ID)
+		df = df[cols]
 		#df.to_csv(join(output_path, 'new_video_aver.csv'), index=True)
 		df.to_csv(join(output_path, f), index=True)
 		if stacked_df is None:
@@ -73,5 +85,7 @@ if __name__ == '__main__':
 			stacked_df = stacked_df.append(df)
 		ID += 1
 
+	stacked_df = stacked_df[cols]
 	stacked_df.to_csv(join(output_path, 'stacked_file.csv'), index=True)
+	
 
