@@ -47,20 +47,21 @@ def plot_figure3(df, left_colNames, right_colNames, dvmin=-100, dvmax=101, step=
 
 	return x, y
 
-def plot_figure3_subplots(df, left_colNames, right_colNames, dvmin=-100, dvmax=101, step=20):
+def plot_figure3_subplots(df, left_colNames, right_colNames, dvmin=-100, dvmax=101, step=20, show=False, write_to=None):
 	fig = make_subplots(rows=2, cols=3, subplot_titles=('sim-numbers', 'alt-numbers', 'seq-numbers', 'sim-bars', 'alt-bars', 'seq-bars'))
 	x = np.array([x for x in range(dvmin, dvmax, step)])
 	
 	for i in df['block_progressive_ID'].unique():
 		block_df = df[df['block_progressive_ID']==i]
-		#print(block_df.shape)
 		x, y = plot_figure3(block_df, left_colNames, right_colNames, -100, 101, 20, show=False)
 		row = int((i-1)/3+1)
 		col = int((i-1)%3+1)
-		print(row, col)
 		fig.add_trace(go.Scatter(x=x, y=y, line_shape='linear', name=str(i), line=dict(color='blue')), row=row, col=col)
 
-	fig.show()
+	if show:
+		fig.show()
+	if write_to is not None:
+		fig.write_image(write_to)
 
 
 # FIGURE FOUR A
@@ -81,11 +82,11 @@ def plot_figure4(df, left_colNames, right_colNames, dvmin=-60, dvmax=61, step=10
 
 	diff = diff.sort_values(by=['diff'], ascending=True)
 
-	print('Fig 4A Blue line')
+	#print('Fig 4A Blue line')
 	wgt3 = diff.loc[diff['count'] > 3]
 	wgt3_res = group(wgt3, dvmin, dvmax, step)
 
-	print('\nFig 4A Red line')
+	#print('\nFig 4A Red line')
 	wlt3 = diff.loc[diff['count'] < 3]
 	wlt3_res = group(wlt3, dvmin, dvmax, step)
 	#print(wlt3)
@@ -100,25 +101,29 @@ def plot_figure4(df, left_colNames, right_colNames, dvmin=-60, dvmax=61, step=10
 	return wgt3_res, wlt3_res
 
 
-def plot_figure4_subplots(df, left_colNames, right_colNames, dvmin=-60, dvmax=61, step=10):
+def plot_figure4_subplots(df, left_colNames, right_colNames, dvmin=-60, dvmax=61, step=10, show=False, write_to=None):
 	fig = make_subplots(rows=2, cols=3, subplot_titles=('sim-numbers', 'alt-numbers', 'seq-numbers', 'sim-bars', 'alt-bars', 'seq-bars'))
 	x = np.array([x for x in range(dvmin, dvmax, step)])
 	
 	for i in df['block_progressive_ID'].unique():
 		block_df = df[df['block_progressive_ID']==i]
-		print(block_df.shape)
 		wgt3_res, wlt3_res = plot_figure4(block_df, left_colNames, right_colNames, -60, 61, 10, show=False)
 		row = int((i-1)/3+1)
 		col = int((i-1)%3+1)
 		fig.add_trace(go.Scatter(x=x, y=wgt3_res, mode='lines', name='W>3', line=dict(color='blue')), row=row, col=col)
 		fig.add_trace(go.Scatter(x=x, y=wlt3_res, mode='lines', name='W<3', line=dict(color='red')), row=row, col=col)
 
-	fig.show()
+	if show:
+		fig.show()
+	if write_to is not None:
+		fig.write_image(write_to)
 
 
 if __name__ == '__main__':
+	plot_dir = "/Users/qiheng/Desktop/code/celss/plots/"
+	data = '/Users/qiheng/Desktop/code/celss/Averaging_folder/all_files_averaging/averaging_online_files/1_transform/stacked_file.csv'
 	#df = pd.read_csv('/Users/qiheng/Desktop/code/celss/Averaging_folder/video_averaging/new_video_aver.csv', header=0)
-	df = pd.read_csv('/Users/qiheng/Desktop/code/celss/Averaging_folder/all_files_averaging/averaging_online_files/1_transform/stacked_file.csv', header=0)
+	df = pd.read_csv(data, header=0)
 	
 	df.stack()
 	df = df.set_index(['participant_ID', 'trial_ID'])
@@ -127,9 +132,9 @@ if __name__ == '__main__':
 	right_colNames = ['value_right_'+str(i) for i in range(1,7)]
 
 	#plot_figure3(df, left_colNames, right_colNames, -100, 101, 20)
-	plot_figure3_subplots(df, left_colNames, right_colNames, -100, 101, 20)
+	plot_figure3_subplots(df, left_colNames, right_colNames, -100, 101, 20, show=True, write_to=plot_dir+"fig3_subplots.png")
 
 	#plot_figure_four(df, left_colNames, right_colNames, -60, 61, 10)
-	plot_figure4_subplots(df, left_colNames, right_colNames, -60, 61, 10)
+	plot_figure4_subplots(df, left_colNames, right_colNames, -60, 61, 10, show=True, write_to=plot_dir+"fig4_subplots.png")
 
 
