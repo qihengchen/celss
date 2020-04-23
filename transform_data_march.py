@@ -25,11 +25,12 @@ def step2(df, ID):
 	if row_num == 180 or row_num == 300: # 180 or 300
 		df['block_progressive_ID'] = [i for i in range(1,7) for _ in range(int(row_num/6))]
 		df['trial_ID'] = [x for x in range(1, row_num+1)]
-		df['trial_ID_block'] = [x for x in range(1, int(row_num/6 +1))] * 6 
+		df['trial_ID_in_block'] = [x for x in range(1, int(row_num/6 +1))] * 6 
 	else:
+		print("NOT 30 OR 50 ROWS " + str(row_num))
 		df['block_progressive_ID'] = 0
 		df['trial_ID'] = 0
-		df['trial_ID_block'] = 0 
+		df['trial_ID_in_block'] = 0 
 
 	df['block_order'] = df['block_type'] % 3 + 1 # based on block_type: 1/4->1 sim; 2/5->2 alt; 3/6->3 seq
 	df['block_stimuli'] = 1
@@ -45,6 +46,7 @@ def step2(df, ID):
 	should_swap = df['start_position'].isin([2, 3])
 	df.loc[should_swap, a_columns+b_columns] = df.loc[should_swap, b_columns+a_columns].values
 	df.drop(columns=['choice_correct.1'], inplace=True)
+	
 	for i in range(1, 7):
 		df['value_left_'+str(i)] = df['setup_a'+str(i)]
 		df['value_right_'+str(i)] = df['setup_b'+str(i)]
@@ -62,18 +64,22 @@ if __name__ == '__main__':
 	stacked_df = None
 	ID = 1
 
-	print(len(files))
-	df = pd.DataFrame({'file_names': files, 'participant_ID': [i+1 for i in range(len(files))]})
-	df.to_csv(join(output_path, 'file_ID.csv'), index=False)
+	#ref_df = pd.DataFrame({'file_names': files, 'participant_ID': [i+1 for i in range(len(files))]})
+	ref_df = pd.DataFrame(columns=['file_names', 'participant_ID', 'num_rows', 'payment', 'avg_resp_time'])
 
-	cols = ['participant_ID', 'treatment', 'block_progressive_ID', 'block_type', 'block_order', 'block_stimuli', 'trial_ID', 'start_position', 'value_left_1', 'value_left_2', 'value_left_3', 'value_left_4', 'value_left_5', 'value_left_6',
+	cols = ['participant_ID', 'treatment', 'block_progressive_ID', 'trial_ID_in_block', 'left-0-right', 'block_type', 'block_order', 'block_stimuli', 'trial_ID', 'start_position', 'value_left_1', 'value_left_2', 'value_left_3', 'value_left_4', 'value_left_5', 'value_left_6',
 		'value_right_1', 'value_right_2', 'value_right_3', 'value_right_4', 'value_right_5', 'value_right_6', 'total_left', 'total_right', 'waiting_elapsed', 'side_chosen', 'choice_correct', 
-		'bonus_block_type', 'bonus_trial_number_chosen', 'bonus_trial_correct', 'bonus_total', 'trial_ID_block', 'left-0-right']
+		'bonus_block_type', 'bonus_trial_number_chosen', 'bonus_trial_correct', 'bonus_total']
 	
 	for f in files:
 		df = pd.read_csv(join(input_path, f), skip_blank_lines=True, header=0)
-		df = df.iloc[:df.shape[0]-7]
-		print(f, ID)
+		num_rows = df.shape[0]
+		
+		payment = df.iloc[num_rows-1:]['bonus_total'] #, df.columns.get_loc('bonus_total')]
+		resp_time = df[['waiting_elapsed']].mean(axis=0)['waiting_elapsed']
+		ref_df = ref_df.append(pd.DataFrame({'file_names':f, 'participant_ID':ID, 'num_rows':num_rows-7, 'payment':payment, 'avg_resp_time':resp_time}))
+
+		df = df.iloc[:num_rows-7]
 		df = step1(df)
 		df = step2(df, ID)
 		df = df[cols]
@@ -86,6 +92,8 @@ if __name__ == '__main__':
 		ID += 1
 
 	stacked_df = stacked_df[cols]
-	stacked_df.to_csv(join(output_path, 'stacked_file.csv'), index=True)
+	stacked_df.drop(columns=['bonus_block_type', 'bonus_trial_number_chosen', 'bonus_trial_correct', 'bonus_total'], inplace=True)
+	stacked_df.to_csv(join(output_path, 'stacked_file.csv'), index=False)
+	ref_df.to_csv(join(output_path, 'reference.csv'), index=False)
 	
 
